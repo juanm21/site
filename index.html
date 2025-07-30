@@ -72,11 +72,11 @@
             </div>
 
 
-            <!-- Network Status Indicator -->
-            <div class="mt-8 flex items-center justify-center">
+            <!-- Network Status Indicator (updates with navigator.onLine) -->
+            <div id="network-status" class="mt-8 flex items-center justify-center">
                 <div class="flex items-center bg-gray-800 border border-gray-700 rounded-full px-4 py-2">
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
-                    <span class="text-gray-300 text-sm">Conexión activa</span>
+                    <div id="network-indicator" class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
+                    <span id="network-status-text" class="text-gray-300 text-sm">Conexión activa</span>
                 </div>
             </div>
         </div>
@@ -220,8 +220,29 @@
             });
         }
 
-        // Get IP when page loads
-        document.addEventListener('DOMContentLoaded', getIP);
+        function updateNetworkStatus() {
+            const indicator = document.getElementById('network-indicator');
+            const statusText = document.getElementById('network-status-text');
+            if (!indicator || !statusText) return;
+            if (navigator.onLine) {
+                indicator.classList.remove('bg-red-500');
+                indicator.classList.add('bg-emerald-400');
+                statusText.textContent = 'Conexión activa';
+            } else {
+                indicator.classList.remove('bg-emerald-400');
+                indicator.classList.add('bg-red-500');
+                statusText.textContent = 'Sin conexión';
+            }
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // Get IP and set initial network status when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            getIP();
+            updateNetworkStatus();
+        });
     </script>
 </body>
 </html>
